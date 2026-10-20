@@ -5,6 +5,7 @@ interface Props {
   entry: DiaryEntry;
   status: SaveStatus;
   disabled: boolean;
+  dateLocked: boolean;
   onChange: (patch: Partial<DiaryEntry>) => void;
   onBack: () => void;
   onDelete: () => void;
@@ -21,6 +22,7 @@ export function DiaryEditor({
   entry,
   status,
   disabled,
+  dateLocked,
   onChange,
   onBack,
   onDelete,
@@ -66,7 +68,8 @@ export function DiaryEditor({
             id="diary-date"
             type="date"
             value={entry.date}
-            disabled={disabled}
+            disabled={disabled || dateLocked}
+            title={dateLocked ? "已创建的日记不能修改日期" : undefined}
             onChange={(event) => {
               if (validDate(event.target.value))
                 onChange({ date: event.target.value });

@@ -76,7 +76,13 @@ export default function App() {
   }
   function change(patch: Partial<DiaryEntry>) {
     if (!entry || busy) return;
-    const next = { ...entry, ...patch, updatedAt: new Date().toISOString() };
+    const savedEntry = entries.find((saved) => saved.id === entry.id);
+    const next = {
+      ...entry,
+      ...patch,
+      date: savedEntry?.date ?? patch.date ?? entry.date,
+      updatedAt: new Date().toISOString(),
+    };
     setEntry(next);
     controller.edit(next);
   }
@@ -149,7 +155,6 @@ export default function App() {
                 日
               </span>
               <div>
-                <h1 className="font-serif text-xl tracking-widest">日常</h1>
                 <p className="mt-1 text-[10px] tracking-[0.18em] text-stone-400">
                   留一点时间给自己
                 </p>
@@ -205,6 +210,7 @@ export default function App() {
           {entry ? (
             <DiaryEditor
               entry={entry}
+              dateLocked={entries.some((saved) => saved.id === entry.id)}
               status={status}
               disabled={busy}
               onChange={change}
@@ -222,17 +228,7 @@ export default function App() {
               >
                 ✎
               </span>
-              <p className="mb-4 text-[10px] tracking-[0.3em] text-stone-400">
-                A LITTLE SPACE FOR YOURSELF
-              </p>
-              <h2 className="font-serif text-3xl tracking-wider">
-                平常日子，也有回响。
-              </h2>
               <p className="mt-5 text-sm leading-8 text-stone-500">
-                {entries.length > 0
-                  ? "从左侧选择一篇日记，回看记录下的日常。"
-                  : "记下一个念头，一段心情，或今天的天气。"}
-                <br />
                 这里，是只属于你的安静角落。
               </p>
               <button

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { displayDate } from "../utils/date";
 import type { DiaryEntry } from "../types/diary";
 interface Props {
@@ -7,6 +8,23 @@ interface Props {
   onSelect: (entry: DiaryEntry) => void;
 }
 export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+  const groups = new Map<string, DiaryEntry[]>();
+  for (const entry of entries) {
+    const group = groups.get(entry.date) ?? [];
+    group.push(entry);
+    groups.set(entry.date, group);
+  }
+
+  function toggleDate(date: string) {
+    setExpandedDates((previous) => {
+      const next = new Set(previous);
+      if (next.has(date)) next.delete(date);
+      else next.add(date);
+      return next;
+    });
+  }
+
   return (
     <nav
       aria-label="历史日记"
@@ -23,26 +41,40 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
           一点小事，也值得记录。
         </p>
       )}
-      {entries.map((entry) => (
-        <button
-          type="button"
-          key={entry.id}
-          disabled={disabled}
-          onClick={() => onSelect(entry)}
-          aria-current={selected === entry.id ? "page" : undefined}
-          className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${selected === entry.id ? "border-[#d7dfd2] bg-[#eaf0e5]" : "border-transparent hover:bg-stone-100"}`}
-        >
-          <p className="mb-2 text-xs text-stone-500">
-            {displayDate(entry.date)} · {entry.date.slice(0, 4)}
-          </p>
-          <h2 className="truncate text-sm font-semibold text-stone-800">
-            {entry.title.trim() || entry.date}
-          </h2>
-          <p className="mt-2 truncate text-xs leading-6 text-stone-500">
-            {entry.content.replace(/\s*\n\s*/g, " ").slice(0, 80) ||
-              "只有标题的一天"}
-          </p>
-        </button>
+      {Array.from(groups, ([date, dateEntries]) => (
+        <section key={date} className="mb-2">
+          <button
+            type="button"
+            aria-expanded={expandedDates.has(date)}
+            aria-controls={`diary-date-${date}`}
+            onClick={() => toggleDate(date)}
+            className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-left text-xs text-stone-500 transition-colors hover:bg-stone-100"
+          >
+            <span aria-hidden="true">{expandedDates.has(date) ? "▾" : "▸"}</span>
+            <span className="flex-1">{displayDate(date)} · {date.slice(0, 4)}</span>
+            <span className="shrink-0 text-stone-400">{dateEntries.length} 篇</span>
+          </button>
+          <div id={`diary-date-${date}`} hidden={!expandedDates.has(date)}>
+            {dateEntries.map((entry) => (
+              <button
+                type="button"
+                key={entry.id}
+                disabled={disabled}
+                onClick={() => onSelect(entry)}
+                aria-current={selected === entry.id ? "page" : undefined}
+                className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${selected === entry.id ? "border-[#d7dfd2] bg-[#eaf0e5]" : "border-transparent hover:bg-stone-100"}`}
+              >
+                <h2 className="truncate text-sm font-semibold text-stone-800">
+                  {entry.title.trim() || entry.date}
+                </h2>
+                <p className="mt-2 truncate text-xs leading-6 text-stone-500">
+                  {entry.content.replace(/\s*\n\s*/g, " ").slice(0, 80) ||
+                    "只有标题的一天"}
+                </p>
+              </button>
+            ))}
+          </div>
+        </section>
       ))}
     </nav>
   );
