@@ -3,7 +3,7 @@ import { DiaryList } from "./components/DiaryList";
 import { DiaryEditor } from "./components/DiaryEditor";
 import { BackupActions } from "./components/BackupActions";
 import { ConfirmDialog } from "./components/ConfirmDialog";
-import { useAutoSave } from "./hooks/useAutoSave";
+import { useManualSave } from "./hooks/useManualSave";
 import { importEntries, listEntries } from "./storage/diaryRepository";
 import { isBlank, sortEntries, type DiaryEntry } from "./types/diary";
 import { createBackup, parseBackup } from "./utils/backup";
@@ -25,7 +25,7 @@ export default function App() {
       ]),
     );
   }, []);
-  const { controller, status } = useAutoSave(committed);
+  const { controller } = useManualSave(committed);
   const load = useCallback(async () => {
     setLoading(true);
     setLoadError(false);
@@ -58,7 +58,11 @@ export default function App() {
   }
   function select(next: DiaryEntry | null) {
     void action(async () => {
-      await controller.flush();
+      if (
+        controller.dirty &&
+        !window.confirm("当前日记尚未保存，确定放弃修改吗？")
+      )
+        return;
       controller.select(next);
       setEntry(next);
     });
@@ -76,27 +80,26 @@ export default function App() {
   }
   function change(patch: Partial<DiaryEntry>) {
     if (!entry || busy) return;
-    const savedEntry = entries.find((saved) => saved.id === entry.id);
+    if (entries.some((saved) => saved.id === entry.id)) return;
     const next = {
       ...entry,
       ...patch,
-      date: savedEntry?.date ?? patch.date ?? entry.date,
+      date: patch.date ?? entry.date,
       updatedAt: new Date().toISOString(),
     };
     setEntry(next);
     controller.edit(next);
   }
-  const visibleEntries = sortEntries(
-    entry
-      ? [
-          ...entries.filter((e) => e.id !== entry.id),
-          ...(isBlank(entry) ? [] : [entry]),
-        ]
-      : [...entries],
-  );
+  function save() {
+    if (entry && entries.some((saved) => saved.id === entry.id)) return;
+    if (!entry || isBlank(entry)) {
+      setMessage("请先填写标题或正文。");
+      return;
+    }
+    void action(() => controller.flush());
+  }
   function exportBackup() {
     void action(async () => {
-      await controller.flush();
       const all = await listEntries();
       if (!all.length) {
         setMessage("暂无可导出内容。");
@@ -117,7 +120,6 @@ export default function App() {
   }
   function importBackup(file: File) {
     void action(async () => {
-      await controller.flush();
       const imported = parseBackup(await file.text());
       const result = await importEntries(imported);
       setEntries(await listEntries());
@@ -181,7 +183,7 @@ export default function App() {
             </div>
           ) : (
             <DiaryList
-              entries={visibleEntries}
+              entries={entries}
               selected={entry?.id}
               disabled={busy}
               onSelect={select}
@@ -211,14 +213,11 @@ export default function App() {
             <DiaryEditor
               entry={entry}
               dateLocked={entries.some((saved) => saved.id === entry.id)}
-              status={status}
+              onSave={save}
               disabled={busy}
               onChange={change}
               onBack={() => select(null)}
               onDelete={() => setConfirm(true)}
-              onRetry={() => {
-                void action(() => controller.flush());
-              }}
             />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
@@ -236,9 +235,7 @@ export default function App() {
                 disabled={busy || loading || loadError}
                 className="mt-8 rounded-lg border border-stone-300 px-5 py-2.5 text-sm text-[#5b6b50] hover:bg-[#f3f5ed]"
               >
-                {entries.length > 0
-                  ? "写一篇新日记 ↗"
-                  : "写下你的第一篇日记 ↗"}
+                {entries.length > 0 ? "写一篇新日记 ↗" : "写下你的第一篇日记 ↗"}
               </button>
               <p className="mt-16 text-[11px] text-stone-400">
                 本地保存 · 无需登录 · 自由书写

@@ -50,7 +50,12 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
             onClick={() => toggleDate(date)}
             className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-left text-xs text-stone-500 transition-colors hover:bg-stone-100"
           >
-            <span aria-hidden="true">{expandedDates.has(date) ? "▾" : "▸"}</span>
+            <span
+              aria-hidden="true"
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center text-xl leading-none"
+            >
+              {expandedDates.has(date) ? "▾" : "▸"}
+            </span>
             <span className="flex-1">{displayDate(date)} · {date.slice(0, 4)}</span>
             <span className="shrink-0 text-stone-400">{dateEntries.length} 篇</span>
           </button>

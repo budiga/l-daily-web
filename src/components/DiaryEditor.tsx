@@ -1,67 +1,44 @@
+import { useEffect, useRef } from "react";
 import type { DiaryEntry } from "../types/diary";
-import type { SaveStatus } from "../hooks/saveController";
 import { displayDate, validDate } from "../utils/date";
 interface Props {
   entry: DiaryEntry;
-  status: SaveStatus;
   disabled: boolean;
   dateLocked: boolean;
   onChange: (patch: Partial<DiaryEntry>) => void;
   onBack: () => void;
   onDelete: () => void;
-  onRetry: () => void;
+  onSave: () => void;
 }
-const labels: Record<SaveStatus, string> = {
-  idle: "无修改",
-  pending: "等待保存…",
-  saving: "保存中…",
-  saved: "已保存至此浏览器",
-  error: "保存失败，内容仍保留",
-};
 export function DiaryEditor({
   entry,
-  status,
   disabled,
   dateLocked,
   onChange,
   onBack,
   onDelete,
-  onRetry,
+  onSave,
 }: Props) {
+  const titleRef = useRef<HTMLInputElement>(null);
+  const focusedEntryId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!disabled && !dateLocked && focusedEntryId.current !== entry.id) {
+      titleRef.current?.focus();
+      focusedEntryId.current = entry.id;
+    }
+  }, [entry.id, disabled, dateLocked]);
+
   return (
     <section aria-label="日记编辑区" className="flex h-full min-h-0 flex-col">
-      <header className="flex min-h-20 flex-wrap items-center justify-between gap-3 border-b border-stone-200/70 px-5 py-4 md:px-10">
+      <div className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-6 pt-10 md:px-12 md:pt-14">
         <button
-          className="text-sm text-stone-600 md:hidden"
+          className="mb-5 self-start text-sm text-stone-600 md:hidden"
           onClick={onBack}
           disabled={disabled}
         >
           ← 返回列表
         </button>
-        <span
-          role="status"
-          className={`text-xs ${status === "error" ? "text-red-700" : "text-stone-500"}`}
-        >
-          ● {labels[status]}{" "}
-          {status === "error" && (
-            <button
-              onClick={onRetry}
-              disabled={disabled}
-              className="ml-2 underline"
-            >
-              重试
-            </button>
-          )}
-        </span>
-        <button
-          onClick={onDelete}
-          disabled={disabled}
-          className="rounded-lg px-3 py-2 text-xs text-stone-500 hover:bg-red-50 hover:text-red-700"
-        >
-          删除日记
-        </button>
-      </header>
-      <div className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-6 pt-10 md:px-12 md:pt-14">
         <div className="mb-7 flex flex-wrap items-center gap-3 text-xs text-stone-500">
           <label htmlFor="diary-date">日记日期</label>
           <input
@@ -77,17 +54,28 @@ export function DiaryEditor({
             className="rounded-md border border-stone-200 bg-transparent px-2 py-1.5"
           />
           <span>{displayDate(entry.date).split("日")[1]}</span>
+          {dateLocked && (
+            <button
+              onClick={onDelete}
+              disabled={disabled}
+              className="ml-auto rounded-lg px-3 py-2 text-xs text-stone-500 hover:bg-red-50 hover:text-red-700"
+            >
+              删除日记
+            </button>
+          )}
         </div>
         <label className="sr-only" htmlFor="diary-title">
           标题（选填）
         </label>
         <input
           id="diary-title"
+          ref={titleRef}
+          readOnly={dateLocked}
           value={entry.title}
           disabled={disabled}
           onChange={(event) => onChange({ title: event.target.value })}
           placeholder="给今天起个名字"
-          className="w-full bg-transparent font-serif text-3xl leading-normal text-stone-800 placeholder:text-stone-300 focus:outline-none md:text-4xl"
+          className={`w-full shrink-0 bg-transparent px-3 py-3 font-serif text-3xl leading-normal text-stone-800 placeholder:text-stone-300 focus:outline-none md:text-4xl ${dateLocked ? "border-0" : "rounded-lg border border-stone-200"}`}
         />
         <div className="my-7 h-px w-10 shrink-0 bg-[#b6c1ab]" />
         <label className="sr-only" htmlFor="diary-content">
@@ -95,12 +83,23 @@ export function DiaryEditor({
         </label>
         <textarea
           id="diary-content"
+          readOnly={dateLocked}
           value={entry.content}
           disabled={disabled}
           onChange={(event) => onChange({ content: event.target.value })}
           placeholder="今天，有什么想留下的？"
-          className="min-h-64 w-full flex-1 resize-none bg-transparent text-base leading-9 text-stone-700 placeholder:text-stone-400 focus:outline-none"
+          className={`min-h-64 w-full flex-1 resize-none bg-transparent px-3 py-3 text-base leading-9 text-stone-700 placeholder:text-stone-400 focus:outline-none ${dateLocked ? "border-0" : "rounded-lg border border-stone-200"}`}
         />
+        {!dateLocked && (
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={disabled}
+            className="mt-6 shrink-0 self-end rounded-lg bg-[#5b6b50] px-6 py-3 text-sm text-white transition-colors hover:bg-[#4b5c40]"
+          >
+            确定创建
+          </button>
+        )}
         <footer className="flex justify-between gap-4 py-6 text-[11px] text-stone-400">
           <span>只为自己，慢慢写。</span>
           <span>{Array.from(entry.content).length} 字</span>

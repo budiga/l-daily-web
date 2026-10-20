@@ -28,9 +28,6 @@ export class SaveController {
     this.revision++;
     this.status("pending");
     this.cancelTimer();
-    this.timer = setTimeout(() => {
-      void this.flush().catch(() => {});
-    }, 500);
   }
   private cancelTimer() {
     clearTimeout(this.timer);

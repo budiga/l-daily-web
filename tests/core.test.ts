@@ -24,7 +24,7 @@ const deferred = () => {
   });
   return { promise, resolve };
 };
-describe("自动保存", () => {
+describe("手动保存", () => {
   it("保存中继续输入时按顺序写入，并在最新事务结束后显示成功", async () => {
     const first = deferred();
     const second = deferred();
@@ -116,7 +116,7 @@ describe("自动保存", () => {
     expect(persist).toHaveBeenCalledWith(entry());
     c.dispose();
   });
-  it("停止输入 500ms 后保存", async () => {
+  it("停止输入后不会保存，显式确认后才保存", async () => {
     vi.useFakeTimers();
     const persist = vi.fn();
     const c = new SaveController(persist, vi.fn(), vi.fn(), vi.fn());
@@ -124,7 +124,9 @@ describe("自动保存", () => {
     c.edit(entry());
     await vi.advanceTimersByTimeAsync(499);
     expect(persist).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(1);
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(persist).not.toHaveBeenCalled();
+    await c.flush();
     expect(persist).toHaveBeenCalledOnce();
     c.dispose();
     vi.useRealTimers();
