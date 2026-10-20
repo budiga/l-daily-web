@@ -38,7 +38,7 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
           <h2 className="truncate text-sm font-semibold text-stone-800">
             {entry.title.trim() || entry.date}
           </h2>
-          <p className="mt-2 line-clamp-2 text-xs leading-6 text-stone-500">
+          <p className="mt-2 truncate text-xs leading-6 text-stone-500">
             {entry.content.replace(/\s*\n\s*/g, " ").slice(0, 80) ||
               "只有标题的一天"}
           </p>
