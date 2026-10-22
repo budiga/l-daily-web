@@ -16,6 +16,7 @@ export default function App() {
   const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [showCreatedToast, setShowCreatedToast] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const committed = useCallback((saved: DiaryEntry) => {
     setEntries((previous) =>
@@ -40,6 +41,11 @@ export default function App() {
   useEffect(() => {
     void load();
   }, [load]);
+  useEffect(() => {
+    if (!showCreatedToast) return;
+    const timer = setTimeout(() => setShowCreatedToast(false), 3000);
+    return () => clearTimeout(timer);
+  }, [showCreatedToast]);
   async function action(work: () => Promise<void>) {
     if (busy) return;
     setBusy(true);
@@ -96,7 +102,12 @@ export default function App() {
       setMessage("请先填写标题或正文。");
       return;
     }
-    void action(() => controller.flush());
+    void action(async () => {
+      await controller.flush();
+      controller.select(null);
+      setEntry(null);
+      setShowCreatedToast(true);
+    });
   }
   function exportBackup() {
     void action(async () => {
@@ -244,6 +255,14 @@ export default function App() {
           )}
         </main>
       </div>
+      {showCreatedToast && (
+        <div
+          role="status"
+          className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-[#dce1d4] bg-[#edf0e7] px-5 py-3 text-sm text-[#5b6b50] shadow-md"
+        >
+          日记创建成功
+        </div>
+      )}
       {!entry && message && (
         <div
           role="status"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { displayDate } from "../utils/date";
+import { displayDate, localDate } from "../utils/date";
 import type { DiaryEntry } from "../types/diary";
 interface Props {
   entries: DiaryEntry[];
@@ -8,7 +8,9 @@ interface Props {
   onSelect: (entry: DiaryEntry) => void;
 }
 export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
-  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(
+    () => new Set([localDate()]),
+  );
   const groups = new Map<string, DiaryEntry[]>();
   for (const entry of entries) {
     const group = groups.get(entry.date) ?? [];
