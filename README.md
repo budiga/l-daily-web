@@ -4,22 +4,24 @@ React + TypeScript + Vite + Tailwind CSS 的纯前端日记本。日记只保存
 
 ## 本地开发
 
-使用 `.nvmrc` 指定的 Node.js 22.14.0 和 npm。
+使用 `.nvmrc` 指定的 Node.js 22.14.0 和 pnpm 10.33.0。
+
+可通过 `npm install --global pnpm@10.33.0` 安装 pnpm；版本由 `package.json` 的 `packageManager` 固定。
 
 ```sh
-npm ci
-npm run dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
-在终端显示的本地地址访问。生产构建使用 `npm run build`，产物在 `dist/`；`npm run preview` 可预览产物。
+在终端显示的本地地址访问。生产构建使用 `pnpm run build`，产物在 `dist/`；`pnpm run preview` 可预览产物。
 
 ## 验证
 
 ```sh
-npm run lint
-npm run typecheck
-npm test
-npm run build
+pnpm run lint
+pnpm run typecheck
+pnpm test
+pnpm run build
 ```
 
 测试覆盖自动保存顺序、写入失败重试、删除与保存并发、空白内容删除、备份校验、导入冲突与事务回滚。实际浏览器验收仍需检查移动端、文件下载、刷新持久化，以及公网 IP 的 HTTP 环境。
