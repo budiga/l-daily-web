@@ -1,5 +1,14 @@
 @import "tailwindcss";
 @theme {
+  --color-ink-100: #f9e9e7;
+  --color-ink-200: #efd8d5;
+  --color-ink-300: #d4aaa6;
+  --color-ink-400: #a57875;
+  --color-ink-500: #88615f;
+  --color-ink-600: #75504f;
+  --color-ink-700: #62413f;
+  --color-ink-800: #4b302f;
+  --color-ink-900: #352120;
   --font-sans: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-serif: "Songti SC", "STSong", Georgia, serif;
 }
@@ -20,7 +29,7 @@ button:disabled {
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #738463;
+  outline: 2px solid #a83f4b;
   outline-offset: 4px;
 }
 #diary-title:focus,
@@ -28,5 +37,5 @@ textarea:focus-visible {
   outline: none;
 }
 ::selection {
-  background: #dce5d3;
+  background: #f2c9c7;
 }

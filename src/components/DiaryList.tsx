@@ -32,12 +32,12 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
       aria-label="历史日记"
       className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
     >
-      <div className="mb-4 flex items-center justify-between px-3 text-xs tracking-widest text-stone-400">
+      <div className="mb-4 flex items-center justify-between px-3 text-xs tracking-widest text-ink-400">
         <span>所有日记</span>
         <span>{entries.length} 篇</span>
       </div>
       {!entries.length && (
-        <p className="px-3 py-8 text-sm leading-7 text-stone-500">
+        <p className="px-3 py-8 text-sm leading-7 text-ink-500">
           写下你的第一篇日记。
           <br />
           一点小事，也值得记录。
@@ -50,7 +50,7 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
             aria-expanded={expandedDates.has(date)}
             aria-controls={`diary-date-${date}`}
             onClick={() => toggleDate(date)}
-            className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-left text-xs text-stone-500 transition-colors hover:bg-stone-100"
+            className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-left text-xs text-ink-500 transition-colors hover:bg-ink-100"
           >
             <span
               aria-hidden="true"
@@ -59,7 +59,7 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
               {expandedDates.has(date) ? "▾" : "▸"}
             </span>
             <span className="flex-1">{displayDate(date)} · {date.slice(0, 4)}</span>
-            <span className="shrink-0 text-stone-400">{dateEntries.length} 篇</span>
+            <span className="shrink-0 text-ink-400">{dateEntries.length} 篇</span>
           </button>
           <div id={`diary-date-${date}`} hidden={!expandedDates.has(date)}>
             {dateEntries.map((entry) => (
@@ -69,12 +69,12 @@ export function DiaryList({ entries, selected, disabled, onSelect }: Props) {
                 disabled={disabled}
                 onClick={() => onSelect(entry)}
                 aria-current={selected === entry.id ? "page" : undefined}
-                className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${selected === entry.id ? "border-[#d7dfd2] bg-[#eaf0e5]" : "border-transparent hover:bg-stone-100"}`}
+                className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${selected === entry.id ? "border-[#e8b7b5] bg-[#f9e1df]" : "border-transparent hover:bg-ink-100"}`}
               >
-                <h2 className="truncate text-sm font-semibold text-stone-800">
+                <h2 className="truncate text-sm font-semibold text-ink-800">
                   {entry.title.trim() || entry.date}
                 </h2>
-                <p className="mt-2 truncate text-xs leading-6 text-stone-500">
+                <p className="mt-2 truncate text-xs leading-6 text-ink-500">
                   {entry.content.replace(/\s*\n\s*/g, " ").slice(0, 80) ||
                     "只有标题的一天"}
                 </p>
