@@ -10,19 +10,19 @@ export function BackupActions({
 }) {
   const input = useRef<HTMLInputElement>(null);
   return (
-    <div className="border-t border-ink-200 p-6">
+    <div className="border-t border-stone-200 p-6">
       <div className="mb-3 flex gap-3">
         <button
           disabled={disabled}
           onClick={onExport}
-          className="flex-1 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-ink-100"
+          className="flex-1 rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs text-stone-600 hover:bg-stone-100"
         >
           ↓ 导出备份
         </button>
         <button
           disabled={disabled}
           onClick={() => input.current?.click()}
-          className="flex-1 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-ink-100"
+          className="flex-1 rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs text-stone-600 hover:bg-stone-100"
         >
           ↑ 导入备份
         </button>
@@ -39,7 +39,7 @@ export function BackupActions({
           }}
         />
       </div>
-      <p className="text-[11px] leading-5 text-ink-400">
+      <p className="text-[11px] leading-5 text-stone-400">
         内容仅保存在当前浏览器。清理浏览器数据会丢失日记，请定期导出备份。
       </p>
     </div>
