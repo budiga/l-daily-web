@@ -19,8 +19,9 @@ button:disabled {
 }
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #738463;
+  outline: 2px solid var(--diary-focus);
   outline-offset: 4px;
 }
 #diary-title:focus,
@@ -28,5 +29,86 @@ textarea:focus-visible {
   outline: none;
 }
 ::selection {
-  background: #dce5d3;
+  background: var(--diary-selection);
+}
+
+:root {
+  --diary-page: #e6f1e9;
+  --diary-paper: #fbfefb;
+  --diary-sidebar: #eff7f0;
+  --diary-logo: #d5eadb;
+  --diary-logo-text: #285e43;
+  --diary-primary: #28734d;
+  --diary-primary-hover: #1d593a;
+  --diary-notice: #e2f1e6;
+  --diary-accent-border: #c4dfcc;
+  --diary-soft: #eaf5ed;
+  --diary-icon: #4f8263;
+  --diary-selected-border: #b4d6bf;
+  --diary-selected: #dcefe2;
+  --diary-divider: #8ebc9e;
+  --diary-text: #203e2d;
+  --diary-body: #304e3c;
+  --diary-secondary: #42654e;
+  --diary-muted: #56755f;
+  --diary-subtle: #64806c;
+  --diary-placeholder: #91aa98;
+  --diary-border: #cfe2d4;
+  --diary-hover: #dfeee3;
+  --diary-focus: #28734d;
+  --diary-selection: #c9e6d3;
+}
+
+:root[data-theme="original"] {
+  --diary-page: #f6f5f0;
+  --diary-paper: #fffefa;
+  --diary-sidebar: #faf9f5;
+  --diary-logo: #e8eddf;
+  --diary-logo-text: #59664e;
+  --diary-primary: #5b6b50;
+  --diary-primary-hover: #4b5c40;
+  --diary-notice: #edf0e7;
+  --diary-accent-border: #dce1d4;
+  --diary-soft: #f3f5ed;
+  --diary-icon: #7c896e;
+  --diary-selected-border: #d7dfd2;
+  --diary-selected: #eaf0e5;
+  --diary-divider: #b6c1ab;
+  --diary-text: #292524;
+  --diary-body: #44403c;
+  --diary-secondary: #57534e;
+  --diary-muted: #78716c;
+  --diary-subtle: #a8a29e;
+  --diary-placeholder: #d6d3d1;
+  --diary-border: #e7e5e4;
+  --diary-hover: #f5f5f4;
+  --diary-focus: #738463;
+  --diary-selection: #dce5d3;
+}
+
+:root[data-theme="red"] {
+  --diary-page: #f5e8e7;
+  --diary-paper: #fffafa;
+  --diary-sidebar: #fbf0ef;
+  --diary-logo: #f0d7d5;
+  --diary-logo-text: #843d3d;
+  --diary-primary: #a54848;
+  --diary-primary-hover: #863737;
+  --diary-notice: #f5e2e0;
+  --diary-accent-border: #e7c6c3;
+  --diary-soft: #f9eae8;
+  --diary-icon: #a26060;
+  --diary-selected-border: #dfb3af;
+  --diary-selected: #f3ddda;
+  --diary-divider: #cc9994;
+  --diary-text: #482b2b;
+  --diary-body: #5d3d3d;
+  --diary-secondary: #784c4c;
+  --diary-muted: #876060;
+  --diary-subtle: #916b6b;
+  --diary-placeholder: #b59390;
+  --diary-border: #ecd2cf;
+  --diary-hover: #f3dfdc;
+  --diary-focus: #a54848;
+  --diary-selection: #edc9c5;
 }

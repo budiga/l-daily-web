@@ -9,7 +9,23 @@ import { isBlank, sortEntries, type DiaryEntry } from "./types/diary";
 import { createBackup, parseBackup } from "./utils/backup";
 import { localDate } from "./utils/date";
 import { uuid } from "./utils/uuid";
+import { parseTheme } from "./utils/theme";
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return parseTheme(localStorage.getItem("diary-theme:v1"));
+    } catch {
+      return parseTheme(null);
+    }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("diary-theme:v1", theme);
+    } catch {
+      // 存储不可用时仍允许在当前页面切换主题。
+    }
+  }, [theme]);
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -154,21 +170,39 @@ export default function App() {
     });
   }
   return (
-    <div className="min-h-dvh bg-[#f6f5f0] p-0 text-stone-800 md:p-7 lg:p-10">
-      <div className="mx-auto flex h-dvh max-w-7xl overflow-hidden bg-[#fffefa] md:h-[calc(100dvh-3.5rem)] md:min-h-[560px] md:rounded-2xl md:border md:border-stone-200 lg:h-[calc(100dvh-5rem)]">
+    <div className="min-h-dvh bg-[var(--diary-page)] p-0 text-[var(--diary-text)] md:p-7 lg:p-10">
+      <div className="mx-auto flex h-12 max-w-7xl items-center justify-end px-4 md:px-0">
+        <label
+          htmlFor="theme-select"
+          className="mr-3 text-xs text-[var(--diary-secondary)]"
+        >
+          主题
+        </label>
+        <select
+          id="theme-select"
+          value={theme}
+          onChange={(event) => setTheme(parseTheme(event.target.value))}
+          className="rounded-lg border border-[var(--diary-border)] bg-[var(--diary-paper)] px-3 py-2 text-sm text-[var(--diary-secondary)]"
+        >
+          <option value="original">原色</option>
+          <option value="green">绿色</option>
+          <option value="red">红色</option>
+        </select>
+      </div>
+      <div className="mx-auto flex h-[calc(100dvh-3rem)] max-w-7xl overflow-hidden bg-[var(--diary-paper)] md:h-[calc(100dvh-6.5rem)] md:min-h-[560px] md:rounded-2xl md:border md:border-[var(--diary-border)] lg:h-[calc(100dvh-8rem)]">
         <aside
-          className={`${entry ? "hidden md:flex" : "flex"} w-full shrink-0 flex-col border-r border-stone-200/80 bg-[#faf9f5] md:w-80`}
+          className={`${entry ? "hidden md:flex" : "flex"} w-full shrink-0 flex-col border-r border-[var(--diary-border)]/80 bg-[var(--diary-sidebar)] md:w-80`}
         >
           <header className="px-7 pb-6 pt-8">
             <div className="mb-8 flex items-center gap-3">
               <span
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8eddf] font-serif text-xl text-[#59664e]"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--diary-logo)] font-serif text-xl text-[var(--diary-logo-text)]"
                 aria-hidden="true"
               >
                 日
               </span>
               <div>
-                <p className="mt-1 text-[10px] tracking-[0.18em] text-stone-400">
+                <p className="mt-1 text-[10px] tracking-[0.18em] text-[var(--diary-subtle)]">
                   留一点时间给自己
                 </p>
               </div>
@@ -176,13 +210,16 @@ export default function App() {
             <button
               disabled={busy || loading || loadError}
               onClick={create}
-              className="w-full rounded-lg bg-[#5b6b50] px-4 py-3 text-sm text-white transition-colors hover:bg-[#4b5c40]"
+              className="w-full rounded-lg bg-[var(--diary-primary)] px-4 py-3 text-sm text-white transition-colors hover:bg-[var(--diary-primary-hover)]"
             >
               ＋ 写日记
             </button>
           </header>
           {loading ? (
-            <p role="status" className="flex-1 px-7 text-sm text-stone-500">
+            <p
+              role="status"
+              className="flex-1 px-7 text-sm text-[var(--diary-muted)]"
+            >
               正在打开日记本…
             </p>
           ) : loadError ? (
@@ -212,7 +249,7 @@ export default function App() {
           {message && (
             <div
               role="status"
-              className="flex items-start justify-between gap-3 border-b border-stone-200 bg-[#edf0e7] px-5 py-3 text-sm leading-6"
+              className="flex items-start justify-between gap-3 border-b border-[var(--diary-border)] bg-[var(--diary-notice)] px-5 py-3 text-sm leading-6"
             >
               <span>{message}</span>
               <button aria-label="关闭提示" onClick={() => setMessage("")}>
@@ -233,22 +270,22 @@ export default function App() {
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
               <span
-                className="mb-7 flex h-20 w-20 items-center justify-center rounded-full border border-[#dce1d4] bg-[#f3f5ed] font-serif text-3xl text-[#7c896e]"
+                className="mb-7 flex h-20 w-20 items-center justify-center rounded-full border border-[var(--diary-accent-border)] bg-[var(--diary-soft)] font-serif text-3xl text-[var(--diary-icon)]"
                 aria-hidden="true"
               >
                 ✎
               </span>
-              <p className="mt-5 text-sm leading-8 text-stone-500">
+              <p className="mt-5 text-sm leading-8 text-[var(--diary-muted)]">
                 这里，是只属于你的安静角落。
               </p>
               <button
                 onClick={create}
                 disabled={busy || loading || loadError}
-                className="mt-8 rounded-lg border border-stone-300 px-5 py-2.5 text-sm text-[#5b6b50] hover:bg-[#f3f5ed]"
+                className="mt-8 rounded-lg border border-[var(--diary-selected-border)] px-5 py-2.5 text-sm text-[var(--diary-primary)] hover:bg-[var(--diary-soft)]"
               >
                 {entries.length > 0 ? "写一篇新日记 ↗" : "写下你的第一篇日记 ↗"}
               </button>
-              <p className="mt-16 text-[11px] text-stone-400">
+              <p className="mt-16 text-[11px] text-[var(--diary-subtle)]">
                 本地保存 · 无需登录 · 自由书写
               </p>
             </div>
@@ -258,7 +295,7 @@ export default function App() {
       {showCreatedToast && (
         <div
           role="status"
-          className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-[#dce1d4] bg-[#edf0e7] px-5 py-3 text-sm text-[#5b6b50] shadow-md"
+          className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-[var(--diary-accent-border)] bg-[var(--diary-notice)] px-5 py-3 text-sm text-[var(--diary-primary)] shadow-md"
         >
           日记创建成功
         </div>
@@ -266,7 +303,7 @@ export default function App() {
       {!entry && message && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-5 rounded-lg border border-stone-200 bg-white p-4 text-sm shadow-md md:hidden"
+          className="fixed inset-x-4 bottom-5 rounded-lg border border-[var(--diary-border)] bg-white p-4 text-sm shadow-md md:hidden"
         >
           {message}
           <button
