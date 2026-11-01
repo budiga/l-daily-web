@@ -10,6 +10,49 @@
 body {
   margin: 0;
 }
+.app-shell {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.diary-frame {
+  height: calc(
+    100dvh - 3rem - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+}
+.pwa-notice {
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 768px) {
+  .app-shell {
+    padding: calc(1.75rem + env(safe-area-inset-top, 0px))
+      calc(1.75rem + env(safe-area-inset-right, 0px))
+      calc(1.75rem + env(safe-area-inset-bottom, 0px))
+      calc(1.75rem + env(safe-area-inset-left, 0px));
+  }
+  .diary-frame {
+    height: calc(
+      100dvh - 6.5rem - env(safe-area-inset-top, 0px) -
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
+@media (min-width: 1024px) {
+  .app-shell {
+    padding: calc(2.5rem + env(safe-area-inset-top, 0px))
+      calc(2.5rem + env(safe-area-inset-right, 0px))
+      calc(2.5rem + env(safe-area-inset-bottom, 0px))
+      calc(2.5rem + env(safe-area-inset-left, 0px));
+  }
+  .diary-frame {
+    height: calc(
+      100dvh - 8rem - env(safe-area-inset-top, 0px) -
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
 button {
   cursor: pointer;
 }

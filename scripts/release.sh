@@ -21,7 +21,7 @@ cp -a assets/. "$root/shared/assets/"
 previous=$(readlink "$root/current" || true)
 switch_to() { ln -s "$1" "$root/.current-next-$$"; mv -Tf "$root/.current-next-$$" "$root/current"; }
 health() {
-    local expected=$1 html resource
+    local expected=$1 html resource file checksum actual
     for attempt in 1 2 3; do
         if curl --fail --silent --show-error --max-time 20 "$site_url/version.json" | tr -d '[:space:]' | grep -Fq "\"sha\":\"$expected\""; then
             html=$(curl --fail --silent --show-error --max-time 20 "$site_url/") || continue
@@ -29,6 +29,21 @@ health() {
             (( ${#resources[@]} > 0 )) || continue
             local failed=0
             for resource in "${resources[@]}"; do curl --fail --silent --show-error --max-time 20 "$site_url$resource" -o /dev/null || failed=1; done
+            # Older retained releases have no manifest. Validate PWA resources
+            # only for releases which include it, including during rollback.
+            if [[ -f "$root/releases/$expected/manifest.webmanifest" ]]; then
+                grep -Fq 'href="/manifest.webmanifest"' <<< "$html" || failed=1
+                local -a workbox_files
+                local pwa_files=(manifest.webmanifest sw.js favicon.svg apple-touch-icon.png icons/pwa-192.png icons/pwa-512.png icons/maskable-512.png)
+                mapfile -t workbox_files < <(awk '$2 ~ /^workbox-[A-Za-z0-9_-]+\.js$/ {print $2}' "$root/releases/$expected/SHA256SUMS")
+                pwa_files+=("${workbox_files[@]}")
+                for file in "${pwa_files[@]}"; do
+                    checksum=$(awk -v file="$file" '$2 == file {print $1}' "$root/releases/$expected/SHA256SUMS")
+                    [[ -n "$checksum" ]] || { failed=1; continue; }
+                    actual=$(curl --fail --silent --show-error --max-time 20 "$site_url/$file" | sha256sum) || { failed=1; continue; }
+                    [[ "${actual%% *}" == "$checksum" ]] || failed=1
+                done
+            fi
             (( failed == 0 )) && return 0
         fi
         sleep 2

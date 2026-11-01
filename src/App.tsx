@@ -3,6 +3,7 @@ import { DiaryList } from "./components/DiaryList";
 import { DiaryEditor } from "./components/DiaryEditor";
 import { BackupActions } from "./components/BackupActions";
 import { ConfirmDialog } from "./components/ConfirmDialog";
+import { PwaControls } from "./components/PwaControls";
 import { useManualSave } from "./hooks/useManualSave";
 import { importEntries, listEntries } from "./storage/diaryRepository";
 import { isBlank, sortEntries, type DiaryEntry } from "./types/diary";
@@ -170,8 +171,12 @@ export default function App() {
     });
   }
   return (
-    <div className="min-h-dvh bg-[var(--diary-page)] p-0 text-[var(--diary-text)] md:p-7 lg:p-10">
+    <div className="app-shell min-h-dvh bg-[var(--diary-page)] p-0 text-[var(--diary-text)] md:p-7 lg:p-10">
       <div className="mx-auto flex h-12 max-w-7xl items-center justify-end px-4 md:px-0">
+        <PwaControls
+          canReload={() => !controller.dirty && !busy && !loading}
+          blocked={controller.dirty || busy || loading}
+        />
         <label
           htmlFor="theme-select"
           className="mr-3 text-xs text-[var(--diary-secondary)]"
@@ -189,7 +194,7 @@ export default function App() {
           <option value="red">红色</option>
         </select>
       </div>
-      <div className="mx-auto flex h-[calc(100dvh-3rem)] max-w-7xl overflow-hidden bg-[var(--diary-paper)] md:h-[calc(100dvh-6.5rem)] md:min-h-[560px] md:rounded-2xl md:border md:border-[var(--diary-border)] lg:h-[calc(100dvh-8rem)]">
+      <div className="diary-frame mx-auto flex h-[calc(100dvh-3rem)] max-w-7xl overflow-hidden bg-[var(--diary-paper)] md:h-[calc(100dvh-6.5rem)] md:min-h-[560px] md:rounded-2xl md:border md:border-[var(--diary-border)] lg:h-[calc(100dvh-8rem)]">
         <aside
           className={`${entry ? "hidden md:flex" : "flex"} w-full shrink-0 flex-col border-r border-[var(--diary-border)]/80 bg-[var(--diary-sidebar)] md:w-80`}
         >

@@ -30,7 +30,7 @@ export function DiaryEditor({
   }, [entry.id, disabled, dateLocked]);
 
   return (
-    <section aria-label="日记编辑区" className="flex h-full min-h-0 flex-col">
+    <section aria-label="日记编辑区" className="flex h-full min-h-0 flex-col overflow-y-auto">
       <div className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-6 pt-10 md:px-12 md:pt-14">
         <button
           className="mb-5 self-start text-sm text-[var(--diary-secondary)] md:hidden"
